@@ -11,7 +11,8 @@ public class ClientFakeName {
         CLIENT_FAKE_NAMES.put(playerName, fakeName);
     }
 
-    public static String getFakeName(AbstractClientPlayerEntity player) {
-        return CLIENT_FAKE_NAMES.getOrDefault(player.getEntityName(), player.getEntityName());
+    public static String getFakeName(String playerName) {
+        return CLIENT_FAKE_NAMES.getOrDefault(playerName, playerName);
     }
+
 }
