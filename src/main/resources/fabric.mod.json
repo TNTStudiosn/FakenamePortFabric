@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "fakenameportfabric",
+  "version": "${version}",
+  "name": "FakenamePortFabric",
+  "description": "Este mod es un port no oficial de el mod FakeName (https://github.com/Tschipp/fakename)",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/fakenameportfabric/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "org.TNTStudios.fakenameportfabric.client.FakenameportfabricClient"
+    ],
+    "main": [
+      "org.TNTStudios.fakenameportfabric.Fakenameportfabric"
+    ]
+  },
+  "mixins": [
+    "fakenameportfabric.mixins.json",
+    {
+      "config": "fakenameportfabric.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
