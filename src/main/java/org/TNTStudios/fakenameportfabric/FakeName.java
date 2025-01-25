@@ -9,7 +9,7 @@ public class FakeName {
     public static final TrackedData<String> FAKE_NAME = DataTracker.registerData(ServerPlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
     public static void register(ServerPlayerEntity player) {
-        player.getDataTracker().startTracking(FAKE_NAME, ""); // Se inicia con una cadena vacía
+        player.getDataTracker().startTracking(FAKE_NAME, "");
     }
 
     public static void setFakeName(ServerPlayerEntity player, String fakeName) {

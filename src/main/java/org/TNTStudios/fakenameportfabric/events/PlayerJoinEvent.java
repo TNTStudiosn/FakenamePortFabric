@@ -9,7 +9,7 @@ public class PlayerJoinEvent {
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
-            FakeName.register(player); // Asegura que el TrackedData esté inicializado
+            FakeName.register(player);
 
             String fakeName = FakeName.getFakeName(player);
             if (fakeName != null && !fakeName.isEmpty()) {

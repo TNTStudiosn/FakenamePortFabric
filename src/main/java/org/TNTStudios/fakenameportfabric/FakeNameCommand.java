@@ -41,7 +41,7 @@ public class FakeNameCommand {
         string = string.replace("&", "§") + "§r";
 
         for (ServerPlayerEntity player : players) {
-            FakeName.setFakeName(player, string); // Se usa la función centralizada
+            FakeName.setFakeName(player, string);
             source.sendMessage(Text.literal(player.getName().getString() + "'s name is now " + string));
         }
 
@@ -50,7 +50,7 @@ public class FakeNameCommand {
 
     private static int handleClear(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
-            FakeName.setFakeName(player, ""); // Se usa la función centralizada para limpiar el nombre
+            FakeName.setFakeName(player, "");
             source.sendMessage(Text.literal(player.getName().getString() + "'s fake name was cleared!"));
         }
         return 1;
