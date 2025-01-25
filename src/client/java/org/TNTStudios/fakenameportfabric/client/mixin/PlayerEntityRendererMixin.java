@@ -4,10 +4,11 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +23,7 @@ public abstract class PlayerEntityRendererMixin {
 
     @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
     private void overrideNameTag(AbstractClientPlayerEntity player, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        ci.cancel(); // 🔹 Cancela el NameTag original de Minecraft
+        ci.cancel(); // 🔹 Bloqueamos la renderización del nombre original
 
         String realName = player.getEntityName();
         String fakeName = ClientFakeName.getFakeName(realName);
@@ -33,14 +34,15 @@ public abstract class PlayerEntityRendererMixin {
         }
 
         matrices.push();
-        Vec3d pos = player.getPos().add(0, player.getHeight() + 0.5, 0); // 🔹 Posicionar encima de la cabeza
-        matrices.translate(pos.x, pos.y, pos.z);
+        Vec3d pos = player.getPos().add(0, player.getHeight() + 0.5, 0); // 🔹 Ajustar posición sobre la cabeza
+        matrices.translate(0, pos.y, 0);
         matrices.scale(-0.025F, -0.025F, 0.025F);
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         int width = textRenderer.getWidth(fakeName) / 2;
 
-        textRenderer.draw(matrices, fakeName, -width, 0, 0xFFFFFF); // 🔹 Renderizar FakeName
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        textRenderer.draw(Text.of(fakeName), -width, 0, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
         matrices.pop();
     }

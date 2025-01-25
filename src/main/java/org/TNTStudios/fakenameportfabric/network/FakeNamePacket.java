@@ -3,7 +3,6 @@ package org.TNTStudios.fakenameportfabric.network;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
@@ -30,29 +29,14 @@ public class FakeNamePacket {
             ServerPlayNetworking.send(otherPlayer, FAKE_NAME_PACKET_ID, buf);
         }
 
-        updateTabList(player, fakeName);
         updateNametag(player, fakeName);
-    }
-
-    private static void updateTabList(ServerPlayerEntity player, String fakeName) {
-        LOGGER.info("📝 Actualizando TabList para {} -> {}", player.getEntityName(), fakeName);
-
-        player.setCustomName(Text.literal(fakeName));
-        player.setCustomNameVisible(true);
-
-        for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
-            LOGGER.debug("🔄 Enviando actualización del TabList a {}", otherPlayer.getEntityName());
-            otherPlayer.networkHandler.sendPacket(new PlayerListS2CPacket(
-                    PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, player
-            ));
-        }
     }
 
     private static void updateNametag(ServerPlayerEntity player, String fakeName) {
         LOGGER.info("🏷️ Actualizando NameTag para {} -> {}", player.getEntityName(), fakeName);
 
         Scoreboard scoreboard = player.getServer().getScoreboard();
-        Team team = scoreboard.getTeam(fakeName); // 🔹 Usamos el FakeName como nombre de equipo
+        Team team = scoreboard.getTeam(fakeName);
 
         if (team == null) {
             LOGGER.info("📌 Creando equipo para {}", fakeName);
@@ -60,7 +44,7 @@ public class FakeNamePacket {
         }
 
         team.setDisplayName(Text.literal(fakeName));
-        team.setPrefix(Text.literal("§e[Fake]§r ")); // 🔹 Prefijo opcional
+        team.setPrefix(Text.literal("§e[Fake]§r "));
         team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
         scoreboard.addPlayerToTeam(player.getEntityName(), team);
 
