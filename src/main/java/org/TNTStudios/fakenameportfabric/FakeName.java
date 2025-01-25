@@ -7,4 +7,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class FakeName {
     public static final TrackedData<String> FAKE_NAME = DataTracker.registerData(ServerPlayerEntity.class, TrackedDataHandlerRegistry.STRING);
+
+    public static void register(ServerPlayerEntity player) {
+        player.getDataTracker().startTracking(FAKE_NAME, ""); // Se inicia con una cadena vacía
+    }
+
+    public static void setFakeName(ServerPlayerEntity player, String fakeName) {
+        player.getDataTracker().set(FAKE_NAME, fakeName);
+    }
+
+    public static String getFakeName(ServerPlayerEntity player) {
+        return player.getDataTracker().get(FAKE_NAME);
+    }
 }

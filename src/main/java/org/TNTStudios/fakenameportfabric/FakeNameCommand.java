@@ -7,6 +7,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.command.argument.EntityArgumentType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,22 +26,22 @@ public class FakeNameCommand {
                         .then(CommandManager.argument("fakename", StringArgumentType.string())
                                 .executes(cmd -> handleRealname(cmd.getSource(), StringArgumentType.getString(cmd, "fakename")))))
                 .then(CommandManager.literal("clear")
-                        .executes(cmd -> handleClear(cmd.getSource(), Collections.singleton(cmd.getSource().getPlayer())))
-                        .then(CommandManager.argument("target", net.minecraft.command.argument.EntityArgumentType.players())
-                                .executes(cmd -> handleClear(cmd.getSource(), net.minecraft.command.argument.EntityArgumentType.getPlayers(cmd, "target")))))
+                        .executes(cmd -> handleClear(cmd.getSource(), Collections.singleton(cmd.getSource().getPlayerOrThrow())))
+                        .then(CommandManager.argument("target", EntityArgumentType.players())
+                                .executes(cmd -> handleClear(cmd.getSource(), EntityArgumentType.getPlayers(cmd, "target")))))
                 .then(CommandManager.literal("set")
                         .then(CommandManager.argument("fakename", StringArgumentType.string())
-                                .executes(cmd -> handleSetname(cmd.getSource(), Collections.singleton(cmd.getSource().getPlayer()), StringArgumentType.getString(cmd, "fakename"))))
-                        .then(CommandManager.argument("target", net.minecraft.command.argument.EntityArgumentType.players())
+                                .executes(cmd -> handleSetname(cmd.getSource(), Collections.singleton(cmd.getSource().getPlayerOrThrow()), StringArgumentType.getString(cmd, "fakename"))))
+                        .then(CommandManager.argument("target", EntityArgumentType.players())
                                 .then(CommandManager.argument("fakename", StringArgumentType.string())
-                                        .executes(cmd -> handleSetname(cmd.getSource(), net.minecraft.command.argument.EntityArgumentType.getPlayers(cmd, "target"), StringArgumentType.getString(cmd, "fakename")))))));
+                                        .executes(cmd -> handleSetname(cmd.getSource(), EntityArgumentType.getPlayers(cmd, "target"), StringArgumentType.getString(cmd, "fakename")))))));
     }
 
     private static int handleSetname(ServerCommandSource source, Collection<ServerPlayerEntity> players, String string) {
         string = string.replace("&", "§") + "§r";
 
         for (ServerPlayerEntity player : players) {
-            player.getDataTracker().set(FakeName.FAKE_NAME, string);
+            FakeName.setFakeName(player, string); // Se usa la función centralizada
             source.sendMessage(Text.literal(player.getName().getString() + "'s name is now " + string));
         }
 
@@ -49,7 +50,7 @@ public class FakeNameCommand {
 
     private static int handleClear(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
-            player.getDataTracker().set(FakeName.FAKE_NAME, "");
+            FakeName.setFakeName(player, ""); // Se usa la función centralizada para limpiar el nombre
             source.sendMessage(Text.literal(player.getName().getString() + "'s fake name was cleared!"));
         }
         return 1;
@@ -61,7 +62,7 @@ public class FakeNameCommand {
         boolean found = false;
 
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList()) {
-            if (player.getDataTracker().get(FakeName.FAKE_NAME).equals(stripped)) {
+            if (FakeName.getFakeName(player).equals(stripped)) {
                 source.sendMessage(Text.literal(string + "'s real name is " + player.getEntityName()));
                 found = true;
             }
