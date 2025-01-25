@@ -23,9 +23,9 @@ public class FakenameportfabricClient implements ClientModInitializer {
                     String fakeName = buf.readString();
 
                     client.execute(() -> {
-                        LOGGER.info("[FakeName] Recibido FakeName del servidor: {} -> {}", playerName, fakeName);
                         ClientFakeName.setFakeName(playerName, fakeName);
 
+                        // Asegurar que el Tablist y el Nametag se actualicen en el cliente
                         PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(playerName);
                         if (entry != null) {
                             entry.setDisplayName(Text.literal(fakeName));
@@ -33,5 +33,6 @@ public class FakenameportfabricClient implements ClientModInitializer {
                     });
                 }
         );
+
     }
 }

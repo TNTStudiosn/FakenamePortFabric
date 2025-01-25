@@ -26,7 +26,9 @@ public class FakeNamePacket {
         // Enviar el paquete a todos los jugadores conectados
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
             ServerPlayNetworking.send(otherPlayer, FAKE_NAME_PACKET_ID, buf);
+            FakeNamePacket.updateNametag(otherPlayer, FakeName.getFakeName(otherPlayer));
         }
+
 
         // Asegurar que el tablist y el nametag se actualicen correctamente
         updateNametag(player, fakeName);
@@ -44,12 +46,12 @@ public class FakeNamePacket {
         }
 
         // Configurar el equipo correctamente
-        team.setDisplayName(Text.literal(fakeName)); // Nombre del equipo
+        team.setDisplayName(Text.literal(fakeName));
         team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
-        team.setPrefix(Text.literal("")); // Evita nombres duplicados en el Tablist
-        team.setSuffix(Text.literal("")); // Evita nombres duplicados en el Tablist
+        team.setPrefix(Text.literal(""));
+        team.setSuffix(Text.literal(""));
 
-        // Eliminar al jugador de cualquier otro equipo
+        // Remover al jugador de cualquier otro equipo
         for (Team existingTeam : scoreboard.getTeams()) {
             if (existingTeam.getPlayerList().contains(player.getEntityName())) {
                 scoreboard.removePlayerFromTeam(player.getEntityName(), existingTeam);
@@ -59,14 +61,12 @@ public class FakeNamePacket {
         // Agregar al jugador al equipo nuevo
         scoreboard.addPlayerToTeam(player.getEntityName(), team);
 
-        // Enviar la actualización del equipo a todos los jugadores conectados
+        // Enviar la actualización a todos los jugadores en el servidor
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
             otherPlayer.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
         }
-
-        // Actualizar el Tablist en el cliente local del jugador
-        player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
     }
+
 
 
 
