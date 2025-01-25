@@ -52,15 +52,15 @@ public class FakeNamePacket {
         LOGGER.info("🏷️ Actualizando NameTag para {} -> {}", player.getEntityName(), fakeName);
 
         Scoreboard scoreboard = player.getServer().getScoreboard();
-        Team team = scoreboard.getTeam(player.getEntityName());
+        Team team = scoreboard.getTeam(fakeName); // 🔹 Usamos el FakeName como nombre de equipo
 
         if (team == null) {
-            LOGGER.info("📌 Creando equipo para {}", player.getEntityName());
-            team = scoreboard.addTeam(player.getEntityName());
+            LOGGER.info("📌 Creando equipo para {}", fakeName);
+            team = scoreboard.addTeam(fakeName);
         }
 
         team.setDisplayName(Text.literal(fakeName));
-        team.setPrefix(Text.literal("§e[Fake]§r "));
+        team.setPrefix(Text.literal("§e[Fake]§r ")); // 🔹 Prefijo opcional
         team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
         scoreboard.addPlayerToTeam(player.getEntityName(), team);
 

@@ -27,7 +27,7 @@ public class FakenameportfabricClient implements ClientModInitializer {
 
                         PlayerListEntry entry = client.getNetworkHandler().getPlayerListEntry(playerName);
                         if (entry != null) {
-                            entry.setDisplayName(net.minecraft.text.Text.literal(fakeName));
+                            entry.setDisplayName(Text.literal(fakeName));
                         }
                     });
                 }
