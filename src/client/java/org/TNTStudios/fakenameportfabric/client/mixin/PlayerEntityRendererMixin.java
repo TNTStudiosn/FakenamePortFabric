@@ -13,13 +13,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.UUID;
+
 @Mixin(PlayerEntityRenderer.class)
 public class PlayerEntityRendererMixin {
     @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
     private void overrideNameTag(AbstractClientPlayerEntity player, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
-        String fakeName = ClientFakeName.getFakeName(player.getEntityName());
+        UUID playerUUID = player.getUuid();
+        String fakeName = ClientFakeName.getFakeName(playerUUID);
 
-        if (!fakeName.equals(player.getEntityName())) {
+        if (fakeName != null && !fakeName.isEmpty()) {
             ci.cancel();
             renderCustomLabel(player, Text.literal(fakeName), matrices, vertexConsumers, light);
         }
@@ -52,5 +55,3 @@ public class PlayerEntityRendererMixin {
         }
     }
 }
-
-

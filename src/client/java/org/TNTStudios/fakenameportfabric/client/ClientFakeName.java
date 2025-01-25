@@ -1,18 +1,17 @@
 package org.TNTStudios.fakenameportfabric.client;
 
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientFakeName {
-    private static final Map<String, String> CLIENT_FAKE_NAMES = new ConcurrentHashMap<>();
+    private static final Map<UUID, String> CLIENT_FAKE_NAMES = new ConcurrentHashMap<>();
 
-    public static void setFakeName(String playerName, String fakeName) {
-        CLIENT_FAKE_NAMES.put(playerName, fakeName);
+    public static void setFakeName(UUID playerUUID, String fakeName) {
+        CLIENT_FAKE_NAMES.put(playerUUID, fakeName);
     }
 
-    public static String getFakeName(String playerName) {
-        return CLIENT_FAKE_NAMES.getOrDefault(playerName, playerName);
+    public static String getFakeName(UUID playerUUID) {
+        return CLIENT_FAKE_NAMES.getOrDefault(playerUUID, null);
     }
-
 }
