@@ -9,6 +9,8 @@ public class PlayerJoinEvent {
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
+
+            // 🔹 Registrar FakeName en el DataTracker ANTES de acceder a él
             FakeName.register(player);
 
             String fakeName = FakeName.getFakeName(player);
