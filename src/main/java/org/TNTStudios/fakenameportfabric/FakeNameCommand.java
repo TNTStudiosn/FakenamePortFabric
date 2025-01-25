@@ -43,7 +43,7 @@ public class FakeNameCommand {
 
         for (ServerPlayerEntity player : players) {
             FakeName.setFakeName(player, string);
-            FakeNamePacket.sendFakeName(player, string); // Enviar paquete de actualización
+            FakeNamePacket.sendFakeName(player, string);
             source.sendMessage(Text.literal(player.getName().getString() + "'s name is now " + string));
         }
 
@@ -53,7 +53,7 @@ public class FakeNameCommand {
     private static int handleClear(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
             FakeName.setFakeName(player, "");
-            FakeNamePacket.sendFakeName(player, player.getEntityName()); // Restablecer al nombre real
+            FakeNamePacket.sendFakeName(player, player.getEntityName());
             source.sendMessage(Text.literal(player.getName().getString() + "'s fake name was cleared!"));
         }
         return 1;

@@ -3,9 +3,13 @@
   "id": "fakenameportfabric",
   "version": "${version}",
   "name": "FakenamePortFabric",
-  "description": "Este mod es un port no oficial de el mod FakeName (https://github.com/Tschipp/fakename)",
-  "authors": [],
-  "contact": {},
+  "description": "Aunque inicialmente se pensó como un port del mod FakeName de Forge, se realizaron numerosos cambios en el código para adaptarlo a Fabric. Como resultado, este mod no es un simple port, sino una reinterpretación inspirada en FakeName de Tschipp (https://github.com/Tschipp/fakename).",
+  "authors": [
+    "@TNTNetta | Dev y CEO de TNTStudios"
+  ],
+  "contact": {
+    "homepage": "https://tntstudiosn.space"
+  },
   "license": "All-Rights-Reserved",
   "icon": "assets/fakenameportfabric/icon.png",
   "environment": "*",
