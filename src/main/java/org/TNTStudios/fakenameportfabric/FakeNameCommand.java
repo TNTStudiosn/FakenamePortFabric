@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.command.argument.EntityArgumentType;
+import org.TNTStudios.fakenameportfabric.network.FakeNamePacket;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ public class FakeNameCommand {
 
         for (ServerPlayerEntity player : players) {
             FakeName.setFakeName(player, string);
+            FakeNamePacket.sendFakeName(player, string); // Enviar paquete de actualización
             source.sendMessage(Text.literal(player.getName().getString() + "'s name is now " + string));
         }
 
@@ -51,10 +53,12 @@ public class FakeNameCommand {
     private static int handleClear(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
             FakeName.setFakeName(player, "");
+            FakeNamePacket.sendFakeName(player, player.getEntityName()); // Restablecer al nombre real
             source.sendMessage(Text.literal(player.getName().getString() + "'s fake name was cleared!"));
         }
         return 1;
     }
+
 
     private static int handleRealname(ServerCommandSource source, String string) {
         string = string.replace("&", "§") + "§r";

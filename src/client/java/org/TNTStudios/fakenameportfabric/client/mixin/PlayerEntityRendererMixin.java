@@ -43,7 +43,7 @@ public class PlayerEntityRendererMixin {
                     false,
                     matrices.peek().getPositionMatrix(),
                     vertexConsumers,
-                    TextRenderer.TextLayerType.NORMAL, // Cambio aquí
+                    TextRenderer.TextLayerType.NORMAL,
                     0,
                     light
             );
@@ -52,4 +52,5 @@ public class PlayerEntityRendererMixin {
         }
     }
 }
+
 

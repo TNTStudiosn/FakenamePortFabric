@@ -33,6 +33,5 @@ public class FakenameportfabricClient implements ClientModInitializer {
                     });
                 }
         );
-
     }
 }
