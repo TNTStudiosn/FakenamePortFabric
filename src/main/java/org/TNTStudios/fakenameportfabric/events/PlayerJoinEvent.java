@@ -15,7 +15,13 @@ public class PlayerJoinEvent {
             ServerPlayerEntity player = handler.getPlayer();
             FakeName.register(player);
             String fakeName = FakeName.getFakeName(player);
-            FakeNamePacket.sendFakeName(player, fakeName);
+
+            if (!fakeName.isEmpty()) {
+                FakeNamePacket.sendFakeName(player, fakeName);
+            } else {
+                FakeNamePacket.sendFakeName(player, player.getEntityName()); // Asegura que el nombre no sea vacío
+            }
         });
     }
+
 }
