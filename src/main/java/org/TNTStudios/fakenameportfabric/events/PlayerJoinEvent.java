@@ -19,9 +19,13 @@ public class PlayerJoinEvent {
             if (!fakeName.isEmpty()) {
                 FakeNamePacket.sendFakeName(player, fakeName);
             } else {
-                FakeNamePacket.sendFakeName(player, player.getEntityName()); // Asegura que el nombre no sea vacío
+                FakeNamePacket.sendFakeName(player, player.getEntityName());
             }
+
+            // Actualizar el tablist y nametag después de que el jugador se conecte
+            server.execute(() -> FakeNamePacket.updateNametag(player, fakeName));
         });
     }
+
 
 }

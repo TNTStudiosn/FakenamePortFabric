@@ -1,5 +1,7 @@
 package org.TNTStudios.fakenameportfabric.client.mixin;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,7 +21,35 @@ public class PlayerEntityRendererMixin {
 
         if (!fakeName.equals(player.getEntityName())) {
             ci.cancel();
-            text = Text.literal(fakeName);
+            renderCustomLabel(player, Text.literal(fakeName), matrices, vertexConsumers, light);
+        }
+    }
+
+    private void renderCustomLabel(AbstractClientPlayerEntity player, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        // Método de renderizado manual para evitar problemas con 'super'
+        double distance = MinecraftClient.getInstance().gameRenderer.getCamera().getPos().squaredDistanceTo(player.getPos());
+
+        if (distance < 64.0) {
+            float scale = 0.02666667F;
+            matrices.push();
+            matrices.translate(0.0, player.getHeight() + 0.5F, 0.0);
+            matrices.scale(-scale, -scale, scale);
+            matrices.translate(0.0, -10.0F, 0.0);
+            MinecraftClient.getInstance().textRenderer.draw(
+                    text,
+                    -MinecraftClient.getInstance().textRenderer.getWidth(text) / 2.0F,
+                    0.0F,
+                    0xFFFFFF,
+                    false,
+                    matrices.peek().getPositionMatrix(),
+                    vertexConsumers,
+                    TextRenderer.TextLayerType.NORMAL, // Cambio aquí
+                    0,
+                    light
+            );
+
+            matrices.pop();
         }
     }
 }
+

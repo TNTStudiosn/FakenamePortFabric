@@ -23,40 +23,52 @@ public class FakeNamePacket {
         buf.writeString(player.getEntityName());
         buf.writeString(fakeName);
 
+        // Enviar el paquete a todos los jugadores conectados
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
             ServerPlayNetworking.send(otherPlayer, FAKE_NAME_PACKET_ID, buf);
         }
 
+        // Asegurar que el tablist y el nametag se actualicen correctamente
         updateNametag(player, fakeName);
     }
 
-    private static void updateNametag(ServerPlayerEntity player, String fakeName) {
+
+    public static void updateNametag(ServerPlayerEntity player, String fakeName) {
         Scoreboard scoreboard = player.getServer().getScoreboard();
-        String teamName = "FakeName_" + player.getUuidAsString().substring(0, 8); // Nombre único del equipo
+        String teamName = "FakeName_" + player.getUuidAsString().substring(0, 8);
 
         // Obtener o crear el equipo en el scoreboard
         Team team = scoreboard.getTeam(teamName);
         if (team == null) {
             team = scoreboard.addTeam(teamName);
-            team.setDisplayName(Text.literal(fakeName));
-            team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
-            team.setPrefix(Text.literal(fakeName + " "));
         }
+
+        // Configurar el equipo correctamente
+        team.setDisplayName(Text.literal(fakeName)); // Nombre del equipo
+        team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
+        team.setPrefix(Text.literal("")); // Evita nombres duplicados en el Tablist
+        team.setSuffix(Text.literal("")); // Evita nombres duplicados en el Tablist
 
         // Eliminar al jugador de cualquier otro equipo
-        Team currentTeam = scoreboard.getPlayerTeam(player.getEntityName());
-        if (currentTeam != null) {
-            scoreboard.removePlayerFromTeam(player.getEntityName(), currentTeam);
+        for (Team existingTeam : scoreboard.getTeams()) {
+            if (existingTeam.getPlayerList().contains(player.getEntityName())) {
+                scoreboard.removePlayerFromTeam(player.getEntityName(), existingTeam);
+            }
         }
 
-
-        // Agregar el jugador al nuevo equipo
+        // Agregar al jugador al equipo nuevo
         scoreboard.addPlayerToTeam(player.getEntityName(), team);
 
-        // Enviar la actualización del equipo a todos los jugadores
+        // Enviar la actualización del equipo a todos los jugadores conectados
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
             otherPlayer.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
         }
+
+        // Actualizar el Tablist en el cliente local del jugador
+        player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
     }
+
+
+
 
 }
