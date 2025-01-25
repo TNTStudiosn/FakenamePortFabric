@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import org.TNTStudios.fakenameportfabric.client.ClientFakeName;
 
 @Mixin(PlayerEntityRenderer.class)
@@ -25,10 +26,13 @@ public abstract class PlayerEntityRendererMixin {
     private void modifyNameTag(AbstractClientPlayerEntity player, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         String fakeName = ClientFakeName.getFakeName(player);
 
-        if (!fakeName.equals(player.getEntityName())) {
-            LOGGER.info("[FakeName] Modificando NameTag de {} a {}", player.getEntityName(), fakeName);
-            ci.cancel();
-            renderLabelIfPresent(player, Text.literal(fakeName), matrices, vertexConsumers, light);
+        // Si el nombre falso es igual al real, no hacer nada
+        if (fakeName.equals(player.getEntityName())) {
+            return;
         }
+
+        LOGGER.debug("[FakeName] Cambiando NameTag de {} -> {}", player.getEntityName(), fakeName);
+        ci.cancel();
+        renderLabelIfPresent(player, Text.literal(fakeName), matrices, vertexConsumers, light);
     }
 }
