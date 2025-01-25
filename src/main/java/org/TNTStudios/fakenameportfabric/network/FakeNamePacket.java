@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -29,8 +30,9 @@ public class FakeNamePacket {
             ServerPlayNetworking.send(otherPlayer, FAKE_NAME_PACKET_ID, buf);
         }
 
-        updateNametag(player, fakeName);
+        updateNametag(player, fakeName); // ✅ Corrección aquí
     }
+
 
     private static void updateNametag(ServerPlayerEntity player, String fakeName) {
         LOGGER.info("🏷️ Actualizando NameTag para {} -> {}", player.getEntityName(), fakeName);
@@ -45,7 +47,7 @@ public class FakeNamePacket {
 
         team.setDisplayName(Text.literal(fakeName));
         team.setPrefix(Text.literal("§e[Fake]§r "));
-        team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
+        team.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.ALWAYS); // 🔹 Asegurar que el nombre se vea
         scoreboard.addPlayerToTeam(player.getEntityName(), team);
 
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {

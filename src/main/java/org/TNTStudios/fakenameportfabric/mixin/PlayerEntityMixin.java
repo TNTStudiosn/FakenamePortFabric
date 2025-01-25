@@ -16,20 +16,9 @@ public abstract class PlayerEntityMixin {
     public void modifyDisplayName(CallbackInfoReturnable<Text> cir) {
         if ((Object) this instanceof ServerPlayerEntity player) {
             String fakeName = FakeName.getFakeName(player);
-            if (!fakeName.equals(player.getEntityName())) { // Solo cambiar si hay un nombre falso
-                cir.setReturnValue(Text.literal(fakeName));
+            if (!fakeName.equals(player.getEntityName())) {
+                cir.setReturnValue(Text.literal(fakeName)); // 🔹 Mostrar el FakeName en la cabeza del jugador
             }
         }
     }
-
-    @Inject(method = "getName", at = @At("HEAD"), cancellable = true)
-    public void modifyName(CallbackInfoReturnable<Text> cir) {
-        if ((Object) this instanceof ServerPlayerEntity player) {
-            String fakeName = FakeName.getFakeName(player);
-            if (fakeName != null && !fakeName.equals(player.getEntityName())) {
-                cir.setReturnValue(Text.literal(fakeName));
-            }
-        }
-    }
-
 }
