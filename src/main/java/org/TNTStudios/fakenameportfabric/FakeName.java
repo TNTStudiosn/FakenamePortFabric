@@ -10,17 +10,15 @@ public class FakeName {
 
     public static void register(ServerPlayerEntity player) {
         try {
-            player.getDataTracker().startTracking(FAKE_NAME, ""); // Registrar el TrackedData
+            player.getDataTracker().startTracking(FAKE_NAME, ""); // Registra la variable en el servidor
         } catch (IllegalStateException ignored) {
-            // Si ya está registrado, no hacemos nada
         }
     }
 
     public static void setFakeName(ServerPlayerEntity player, String fakeName) {
         try {
-            player.getDataTracker().set(FAKE_NAME, fakeName); // Evitar errores si aún no está registrado
+            player.getDataTracker().set(FAKE_NAME, fakeName); // Guarda el nombre falso en el servidor
         } catch (Exception ignored) {
-            // Si el TrackedData no está inicializado, no crashea el servidor
         }
     }
 
@@ -28,7 +26,7 @@ public class FakeName {
         try {
             return player.getDataTracker().get(FAKE_NAME);
         } catch (Exception ignored) {
-            return player.getEntityName(); // Si falla, devolver el nombre real
+            return player.getEntityName(); // Si falla, devuelve el nombre real
         }
     }
 }

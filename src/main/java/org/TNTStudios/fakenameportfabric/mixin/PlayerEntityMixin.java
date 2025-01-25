@@ -26,9 +26,10 @@ public abstract class PlayerEntityMixin {
     public void modifyName(CallbackInfoReturnable<Text> cir) {
         if ((Object) this instanceof ServerPlayerEntity player) {
             String fakeName = FakeName.getFakeName(player);
-            if (!fakeName.equals(player.getEntityName())) { // Solo cambiar si hay un nombre falso
+            if (fakeName != null && !fakeName.equals(player.getEntityName())) {
                 cir.setReturnValue(Text.literal(fakeName));
             }
         }
     }
+
 }

@@ -21,10 +21,7 @@ public class FakeNamePacket {
         buf.writeString(fakeName);
         ServerPlayNetworking.send(player, FAKE_NAME_PACKET_ID, buf);
 
-        // 🔹 Actualiza el tab list
         updateTabList(player, fakeName);
-
-        // 🔹 Actualiza el nombre sobre la cabeza
         updateNametag(player, fakeName);
     }
 
@@ -41,10 +38,10 @@ public class FakeNamePacket {
 
     private static void updateNametag(ServerPlayerEntity player, String fakeName) {
         Scoreboard scoreboard = player.getServer().getScoreboard();
-        Team team = scoreboard.getTeam(fakeName);
+        Team team = scoreboard.getTeam(player.getEntityName());
 
         if (team == null) {
-            team = scoreboard.addTeam(fakeName);
+            team = scoreboard.addTeam(player.getEntityName());
         }
 
         team.setDisplayName(Text.literal(fakeName));
@@ -52,7 +49,7 @@ public class FakeNamePacket {
         team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
         scoreboard.addPlayerToTeam(player.getEntityName(), team);
 
-        // 🔹 Envía el paquete de actualización del equipo a todos los jugadores
+        // 🔹 Enviar actualización a todos los jugadores
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
             otherPlayer.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
         }
