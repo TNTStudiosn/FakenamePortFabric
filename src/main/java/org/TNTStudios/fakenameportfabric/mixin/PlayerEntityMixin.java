@@ -17,7 +17,7 @@ public abstract class PlayerEntityMixin {
         if ((Object) this instanceof ServerPlayerEntity player) {
             String fakeName = FakeName.getFakeName(player);
             if (!fakeName.equals(player.getEntityName())) {
-                cir.setReturnValue(Text.literal(fakeName)); // 🔹 Mostrar el FakeName en la cabeza del jugador
+                cir.setReturnValue(Text.literal(fakeName));
             }
         }
     }

@@ -9,6 +9,6 @@ public class Fakenameportfabric implements ModInitializer {
     @Override
     public void onInitialize() {
         FakeNameCommand.register();
-        PlayerJoinEvent.register(); // Se asegura que los nombres falsos sean registrados correctamente al entrar
+        PlayerJoinEvent.register();
     }
 }

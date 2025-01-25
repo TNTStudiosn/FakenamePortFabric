@@ -11,15 +11,14 @@ import org.TNTStudios.fakenameportfabric.client.ClientFakeName;
 
 @Mixin(PlayerListEntry.class)
 public abstract class PlayerListEntryMixin {
-
     @Inject(method = "getDisplayName", at = @At("HEAD"), cancellable = true)
     public void modifyDisplayName(CallbackInfoReturnable<Text> cir) {
-        GameProfile profile = ((PlayerListEntry) (Object) this).getProfile(); // 🔹 Obtener GameProfile
+        GameProfile profile = ((PlayerListEntry) (Object) this).getProfile();
         String realName = profile.getName();
         String fakeName = ClientFakeName.getFakeName(realName);
 
         if (!fakeName.equals(realName)) {
-            cir.setReturnValue(Text.literal(fakeName)); // 🔹 Modificar la visualización en la lista de jugadores
+            cir.setReturnValue(Text.literal(fakeName));
         }
     }
 }
