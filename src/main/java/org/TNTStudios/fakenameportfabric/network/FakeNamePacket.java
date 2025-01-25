@@ -18,7 +18,8 @@ public class FakeNamePacket {
 
     public static void sendFakeName(ServerPlayerEntity player, String fakeName) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeString(fakeName);
+        buf.writeString(player.getEntityName()); // Nombre original
+        buf.writeString(fakeName); // Nombre falso
         ServerPlayNetworking.send(player, FAKE_NAME_PACKET_ID, buf);
 
         updateTabList(player, fakeName);
