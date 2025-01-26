@@ -33,40 +33,36 @@ public class FakeNamePacket {
 
     public static void updateNametag(ServerPlayerEntity player, String fakeName) {
         Scoreboard scoreboard = player.getServer().getScoreboard();
-        String teamName = "FakeName_" + player.getUuidAsString();
-
+        String teamName = "FakeNameGlobal"; // Un solo equipo global
         Team team = scoreboard.getTeam(teamName);
-        boolean isNewTeam = false;
+
+        // Si el equipo no existe, crearlo una sola vez
         if (team == null) {
             team = scoreboard.addTeam(teamName);
-            isNewTeam = true;
-            LOGGER.info("[FakeNamePacket] Equipo creado: {}", teamName);
+            team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
+            team.setPrefix(Text.literal(""));
+            team.setSuffix(Text.literal(""));
         }
 
-
+        // Asignar el nombre falso en el equipo
         team.setDisplayName(Text.literal(fakeName));
-        team.setNameTagVisibilityRule(Team.VisibilityRule.ALWAYS);
-        team.setPrefix(Text.literal(""));
-        team.setSuffix(Text.literal(""));
 
-
+        // Remover al jugador de otros equipos
         for (Team existingTeam : scoreboard.getTeams()) {
             if (existingTeam.getPlayerList().contains(player.getEntityName()) && !existingTeam.getName().equals(teamName)) {
                 scoreboard.removePlayerFromTeam(player.getEntityName(), existingTeam);
-                LOGGER.info("[FakeNamePacket] Jugador {} removido del equipo {}", player.getEntityName(), existingTeam.getName());
             }
         }
 
-
+        // Agregar al jugador al equipo si no está ya en él
         if (!team.getPlayerList().contains(player.getEntityName())) {
             scoreboard.addPlayerToTeam(player.getEntityName(), team);
-            LOGGER.info("[FakeNamePacket] Jugador {} agregado al equipo {}", player.getEntityName(), teamName);
         }
 
-
+        // Enviar la actualización a todos los jugadores
         for (ServerPlayerEntity otherPlayer : player.getServer().getPlayerManager().getPlayerList()) {
-            otherPlayer.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, isNewTeam));
-            LOGGER.info("[FakeNamePacket] Enviado TeamS2CPacket a {}", otherPlayer.getName().getString());
+            otherPlayer.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
         }
     }
+
 }

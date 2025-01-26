@@ -14,26 +14,27 @@ public class PlayerJoinEvent {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
             FakeName.register(player);
-            String fakeName = FakeName.getFakeName(player);
 
-            if (!fakeName.isEmpty()) {
-                FakeNamePacket.sendFakeName(player, fakeName);
-            } else {
-                FakeNamePacket.sendFakeName(player, player.getEntityName());
+            // Obtener el FakeName o el nombre real si no tiene
+            String fakeName = FakeName.getFakeName(player);
+            if (fakeName == null || fakeName.isEmpty()) {
+                fakeName = player.getEntityName();
             }
 
+            // Enviar el nombre falso actualizado al jugador
+            FakeNamePacket.sendFakeName(player, fakeName);
 
-            server.execute(() -> {
-                FakeNamePacket.updateNametag(player, fakeName);
+            // Actualizar solo el jugador que entró al servidor
+            FakeNamePacket.updateNametag(player, fakeName);
 
-
-                for (ServerPlayerEntity otherPlayer : server.getPlayerManager().getPlayerList()) {
+            // Notificar a todos los jugadores sobre el FakeName actualizado
+            for (ServerPlayerEntity otherPlayer : server.getPlayerManager().getPlayerList()) {
+                if (!otherPlayer.equals(player)) {
                     FakeNamePacket.updateNametag(otherPlayer, FakeName.getFakeName(otherPlayer));
                 }
-            });
+            }
 
+            LOGGER.info("[PlayerJoinEvent] {} ha ingresado con el nombre falso: {}", player.getEntityName(), fakeName);
         });
     }
-
-
 }

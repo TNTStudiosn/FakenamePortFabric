@@ -19,6 +19,8 @@ public class PlayerEntityRendererMixin {
     @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
     private void overrideNameTag(AbstractClientPlayerEntity player, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         UUID playerUUID = player.getUuid();
+
+        // Guardar nombres en caché para evitar múltiples búsquedas
         String fakeName = ClientFakeName.getFakeName(playerUUID);
 
         if (fakeName != null && !fakeName.isEmpty()) {
