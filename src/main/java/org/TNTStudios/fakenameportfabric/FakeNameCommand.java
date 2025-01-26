@@ -57,7 +57,7 @@ public class FakeNameCommand {
         for (ServerPlayerEntity player : players) {
             FakeName.setFakeName(player, fakeName);
             FakeNamePacket.sendFakeName(player, fakeName);
-            source.sendMessage(Text.literal(player.getName().getString() + "'s name is now " + fakeName));
+            source.sendMessage(Text.literal("El nombre de " + player.getName().getString() + " ahora es " + fakeName));
         }
 
         return 1;
@@ -80,7 +80,7 @@ public class FakeNameCommand {
                 scoreboard.removePlayerFromTeam(player.getEntityName(), team);
             }
 
-            source.sendMessage(Text.literal(player.getName().getString() + "'s fake name was cleared!"));
+            source.sendMessage(Text.literal("El nombre falso de " + player.getName().getString() + " ha sido eliminado."));
         }
         return 1;
     }
@@ -95,13 +95,13 @@ public class FakeNameCommand {
 
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList()) {
             if (FakeName.getFakeName(player).equals(stripped)) {
-                source.sendMessage(Text.literal(string + "'s real name is " + player.getEntityName()));
+                source.sendMessage(Text.literal("El nombre real de " + string + " es " + player.getEntityName()));
                 found = true;
             }
         }
 
         if (!found) {
-            source.sendError(Text.literal("No player with that name was found!"));
+            source.sendError(Text.literal("No se encontró a ningún jugador con ese nombre."));
         }
         return found ? 1 : 0;
     }
