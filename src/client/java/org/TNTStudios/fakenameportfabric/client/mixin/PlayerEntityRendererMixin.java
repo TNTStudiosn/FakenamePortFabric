@@ -9,7 +9,6 @@ import org.TNTStudios.fakenameportfabric.client.ClientFakeName;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.UUID;
@@ -20,12 +19,19 @@ public class PlayerEntityRendererMixin {
     private void overrideNameTag(AbstractClientPlayerEntity player, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         UUID playerUUID = player.getUuid();
 
-        // Guardar nombres en caché para evitar múltiples búsquedas
+        // Obtener el nombre falso
         String fakeName = ClientFakeName.getFakeName(playerUUID);
 
-        if (fakeName != null && !fakeName.isEmpty()) {
-            ci.cancel();
-            renderCustomLabel(player, Text.literal(fakeName), matrices, vertexConsumers, light);
+        if (fakeName != null) {
+            if (fakeName.equals(".")) {
+                // Si el nombre falso es ".", ocultar la etiqueta de nombre
+                ci.cancel();
+                return;
+            } else if (!fakeName.isEmpty()) {
+                // Si hay un nombre falso diferente de ".", renderizarlo
+                ci.cancel();
+                renderCustomLabel(player, Text.literal(fakeName), matrices, vertexConsumers, light);
+            }
         }
     }
 
@@ -36,20 +42,15 @@ public class PlayerEntityRendererMixin {
             float scale = 0.02666667F;
             matrices.push();
 
-
             matrices.translate(0.0, player.getHeight() + 0.5F, 0.0);
-
 
             float yaw = net.minecraft.client.MinecraftClient.getInstance().gameRenderer.getCamera().getYaw();
             float pitch = net.minecraft.client.MinecraftClient.getInstance().gameRenderer.getCamera().getPitch();
 
-
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(pitch));
-
+            matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
+            matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_X.rotationDegrees(pitch));
 
             matrices.scale(-scale, -scale, scale);
-
 
             net.minecraft.client.MinecraftClient.getInstance().textRenderer.draw(
                     text,
@@ -67,6 +68,4 @@ public class PlayerEntityRendererMixin {
             matrices.pop();
         }
     }
-
-
 }

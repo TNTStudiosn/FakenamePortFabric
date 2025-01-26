@@ -19,8 +19,15 @@ public abstract class PlayerListEntryMixin {
         UUID playerUUID = profile.getId();
         String fakeName = ClientFakeName.getFakeName(playerUUID);
 
-        if (fakeName != null && !fakeName.isEmpty()) {
-            cir.setReturnValue(Text.literal(fakeName));
+        if (fakeName != null) {
+            if (fakeName.equals(".")) {
+                // Si el nombre falso es ".", devolver un texto vacío para ocultar el nombre
+                cir.setReturnValue(Text.literal(""));
+                return;
+            } else if (!fakeName.isEmpty()) {
+                // Si hay un nombre falso diferente de ".", devolverlo
+                cir.setReturnValue(Text.literal(fakeName));
+            }
         }
     }
 }

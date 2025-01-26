@@ -11,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.command.argument.EntityArgumentType;
 import org.TNTStudios.fakenameportfabric.network.FakeNamePacket;
+import org.TNTStudios.fakenameportfabric.storage.FakeNameStorage;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,30 +40,37 @@ public class FakeNameCommand {
                         .then(CommandManager.argument("target", EntityArgumentType.players())
                                 .requires(source -> source.hasPermissionLevel(4)) // Solo OPs nivel 4 pueden cambiar el nombre de otros
                                 .then(CommandManager.argument("fakename", StringArgumentType.string())
-                                        .executes(cmd -> handleSetname(cmd.getSource(), EntityArgumentType.getPlayers(cmd, "target"), StringArgumentType.getString(cmd, "fakename")))))));
+                                        .executes(cmd -> handleSetname(cmd.getSource(), EntityArgumentType.getPlayers(cmd, "target"), StringArgumentType.getString(cmd, "fakename"))))))
+                // Nuevo Subcomando HideName para el ejecutante actual
+                .then(CommandManager.literal("HideName")
+                        .executes(cmd -> handleHideName(cmd.getSource(), Collections.singleton(cmd.getSource().getPlayerOrThrow()))))
+                // Nuevo Subcomando HideName para múltiples objetivos con permisos
+                .then(CommandManager.literal("HideName")
+                        .then(CommandManager.argument("target", EntityArgumentType.players())
+                                .requires(source -> source.hasPermissionLevel(4)) // Solo OPs nivel 4 pueden ocultar nombres de otros
+                                .executes(cmd -> handleHideName(cmd.getSource(), EntityArgumentType.getPlayers(cmd, "target")))))
+        );
     }
-
 
     private static int handleSetname(ServerCommandSource source, Collection<ServerPlayerEntity> players, String fakeName) {
         fakeName = fakeName.replace("&", "§") + "§r";
 
         // Verificar si el nombre ya está en uso
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList()) {
-            if (FakeName.getFakeName(player).equals(fakeName)) {
+            if (FakeNameStorage.getFakeName(player).equals(fakeName)) {
                 source.sendError(Text.literal("Ese nombre ya está en uso!"));
                 return 0;
             }
         }
 
         for (ServerPlayerEntity player : players) {
-            FakeName.setFakeName(player, fakeName);
+            FakeNameStorage.setFakeName(player, fakeName);
             FakeNamePacket.sendFakeName(player, fakeName);
             source.sendMessage(Text.literal("El nombre de " + player.getName().getString() + " ahora es " + fakeName));
         }
 
         return 1;
     }
-
 
     private static int handleClear(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
@@ -85,16 +93,13 @@ public class FakeNameCommand {
         return 1;
     }
 
-
-
-
     private static int handleRealname(ServerCommandSource source, String string) {
         string = string.replace("&", "§") + "§r";
         String stripped = net.minecraft.text.Text.of(string).getString();
         boolean found = false;
 
         for (ServerPlayerEntity player : source.getServer().getPlayerManager().getPlayerList()) {
-            if (FakeName.getFakeName(player).equals(stripped)) {
+            if (FakeNameStorage.getFakeName(player).equals(stripped)) {
                 source.sendMessage(Text.literal("El nombre real de " + string + " es " + player.getEntityName()));
                 found = true;
             }
@@ -104,5 +109,16 @@ public class FakeNameCommand {
             source.sendError(Text.literal("No se encontró a ningún jugador con ese nombre."));
         }
         return found ? 1 : 0;
+    }
+
+    // Nuevo Método para Handle HideName
+    private static int handleHideName(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
+        for (ServerPlayerEntity player : players) {
+            // Enviar un nombre falso "." para ocultar el nombre
+            FakeNameStorage.setFakeName(player, ".");
+            FakeNamePacket.sendFakeName(player, ".");
+            source.sendMessage(Text.literal("El nombre de " + player.getName().getString() + " ahora está oculto."));
+        }
+        return 1;
     }
 }
