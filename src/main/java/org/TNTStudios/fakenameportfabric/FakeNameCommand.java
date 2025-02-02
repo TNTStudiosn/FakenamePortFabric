@@ -74,24 +74,17 @@ public class FakeNameCommand {
 
     private static int handleClear(ServerCommandSource source, Collection<ServerPlayerEntity> players) {
         for (ServerPlayerEntity player : players) {
-            // Restaurar el nombre real en FakeName y el scoreboard
-            FakeName.setFakeName(player, player.getEntityName());
+            // Utiliza el método del almacenamiento para borrar el fake name de forma persistente
+            FakeNameStorage.clearFakeName(player);
+            // Envía el paquete para actualizar el nombre en los clientes
             FakeNamePacket.sendFakeName(player, player.getEntityName());
-
-            // Obtener el Scoreboard
-            Scoreboard scoreboard = player.getServer().getScoreboard();
-            String teamName = "FakeNameGlobal";
-            Team team = scoreboard.getTeam(teamName);
-
-            // Remover al jugador del equipo
-            if (team != null) {
-                scoreboard.removePlayerFromTeam(player.getEntityName(), team);
-            }
 
             source.sendMessage(Text.literal("El nombre falso de " + player.getName().getString() + " ha sido eliminado."));
         }
         return 1;
     }
+
+
 
     private static int handleRealname(ServerCommandSource source, String string) {
         string = string.replace("&", "§") + "§r";
